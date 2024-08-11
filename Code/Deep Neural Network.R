@@ -9,6 +9,7 @@ library(keras)
 library(mlbench)
 library(neuralnet)
 library(magrittr)
+library(tensorflow)
 
 data("BostonHousing")
 
@@ -42,6 +43,31 @@ dimnames(boston) <- NULL
 # data partitioning
 
 set.seed(1234)
-ind <- sample()
+ind <- sample(2, nrow(boston), replace = T, prob = c(0.7, 0.3))
+            # --  prepares a row number of 1 and 2, randomly!
+
+DNN_train <-boston[ind==1, 1:13] # anywhere the row number 1 appears
+DNN_test <- boston[ind==2, 1:13]
+
+DNN_train_target <-boston[ind==1, 14]
+DNN_test_target <-boston[ind==2, 14]
+
+# calculate mean and standard deviations gotten from the training data
+mean_values <- colMeans(DNN_train)  # mean of all columns
+SD_values <- apply(DNN_train,2, sd)  #  2 = column; 1 =rows; 
+                                      # sd is the function for standard dev.
+
+norm_train <- scale(DNN_train, center = mean_values,
+                    scale = SD_values)
+
+norm_test <- scale(DNN_test, center = mean_values,
+                   scale = SD_values)
+
+
+# model creation using Keras
+
+Dnn_model <- keras_model_sequential()
+
+
 
 
