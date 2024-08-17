@@ -1,4 +1,4 @@
-
+library(tidyverse)
 library(ggplot2)
 library(gridExtra)
 
@@ -50,26 +50,18 @@ attach(EDA)
 
 EDA$day <- as.Date(EDA$day)
 
-# Load required packages
-library(ggplot2)
-library(scales)
-
 
 
 # Load required packages
 library(ggplot2)
 library(scales)
 
-# Create the time series plot
-# Ensure 'date' is in date format
-EDA$date <- as.Date(EDA$date)
+
 
 # Plot the time series with two variables
 ggplot(EDA, aes(x = day)) +
-  # Plot energy_sum
   geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
-
-  geom_line(aes(y = temperatureMax, color = "Temperature"), linewidth = 0.7) +
+  geom_line(aes(y = temperatureMax, color = "Max. Temperature"), linewidth = 0.9, alpha = 0.8) +
   # Scale for the two y-axes with limits
   scale_y_continuous(
     name = "(KW/Day)",
@@ -84,7 +76,147 @@ ggplot(EDA, aes(x = day)) +
     axis.title.y.right = element_text(color = "red"),
     axis.title.y.left = element_text(color = "black")
   ) +
-  scale_color_manual(values = c("Energy Consumed" = "black", "Temperature" = "red"))
+  scale_color_manual(values = c("Energy Consumed" = "black", "Max. Temperature" = "red"))
 
-max(EDA$energy_sum)
-max(temperatureMax)
+
+
+# Hunidity
+
+ggplot(EDA, aes(x = day)) +
+ geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
+  geom_line(aes(y = humidity*10, color = "Humidity"), linewidth = 0.9, alpha = 0.6) +
+  # Scale for the two y-axes with limits
+  scale_y_continuous(
+    name = "(KW/Day)",
+    limits = c(3, 16),  # Set limits for the left axis
+    sec.axis = sec_axis(~./2, name = "(dg/m3)")  # Adjust scaling as needed
+  ) +
+  labs(x = "Date",
+       color = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title.y.right = element_text(color = "blue"),
+    axis.title.y.left = element_text(color = "black")
+  ) +
+  scale_color_manual(values = c("Energy Consumed" = "black", "Humidity" = "blue"))
+
+
+# pressure 
+
+ggplot(EDA, aes(x = day)) +
+  geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
+  geom_line(aes(y = windSpeed*1, color = "windSpeed"), linewidth = 0.9, alpha = 0.6) +
+  # Scale for the two y-axes with limits
+  scale_y_continuous(
+    name = "(KW/Day)",
+    limits = c(0, 16),  # Set limits for the left axis
+    sec.axis = sec_axis(~./1.5, name = "(m/s)")  # Adjust scaling as needed
+  ) +
+  labs(x = "Date",
+       color = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title.y.right = element_text(color = "green"),
+    axis.title.y.left = element_text(color = "black")
+  ) +
+  scale_color_manual(values = c("Energy Consumed" = "black", "windSpeed" = "green"))
+
+
+# UV Index!
+ggplot(EDA, aes(x = day)) +
+  geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
+  geom_line(aes(y = uvIndex*scale_factor, color = "UV Index"), linewidth = 1.4, alpha = 0.6) +
+  # Scale for the two y-axes with limits
+  scale_y_continuous(
+    name = "(KW/Day)",
+    limits = c(0, 16),  # Set limits for the left axis
+    sec.axis = sec_axis(~./scale_factor, name = "(mW/m2)")  # Adjust scaling as needed
+  ) +
+  labs(x = "Date",
+       color = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title.y.right = element_text(color = "orange"),
+    axis.title.y.left = element_text(color = "black")
+  ) +
+  scale_color_manual(values = c("Energy Consumed" = "black", "UV Index" = "orange"))
+
+scale_factor <- max(EDA$energy_sum) / max(EDA$uvIndex)
+
+
+
+# Visibility
+scale_factor <- max(EDA$energy_sum) / max(EDA$visibility)
+# 
+ggplot(EDA, aes(x = day)) +
+  geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
+  geom_line(aes(y = visibility*scale_factor, color = "visibility"), linewidth = 1.4, alpha = 0.6) +
+  # Scale for the two y-axes with limits
+  scale_y_continuous(
+    name = "(KW/Day)",
+    limits = c(0, 16),  # Set limits for the left axis
+    sec.axis = sec_axis(~./scale_factor, name = "(meters)")  # Adjust scaling as needed
+  ) +
+  labs(x = "Date",
+       color = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title.y.right = element_text(color = "darkorange"),
+    axis.title.y.left = element_text(color = "black")
+  ) +
+  scale_color_manual(values = c("Energy Consumed" = "black", "visibility" = "darkorange"))
+
+
+# Dewpoint
+scale_factor <- max(EDA$energy_sum) / max(EDA$dewPoint)
+# 
+ggplot(EDA, aes(x = day)) +
+  geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
+  geom_line(aes(y = dewPoint*scale_factor, color = "Dew Point"), linewidth = 1.4, alpha = 0.6) +
+  # Scale for the two y-axes with limits
+  scale_y_continuous(
+    name = "(KW/Day)",
+    limits = c(0, 16),  # Set limits for the left axis
+    sec.axis = sec_axis(~./scale_factor, name = "(Degree Celcius)")  # Adjust scaling as needed
+  ) +
+  labs(x = "Date",
+       color = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title.y.right = element_text(color = "brown"),
+    axis.title.y.left = element_text(color = "black")
+  ) +
+  scale_color_manual(values = c("Energy Consumed" = "black", "Dew Point" = "brown"))
+
+
+# Cloud Cover
+scale_factor <- max(EDA$energy_sum) / max(EDA$cloudCover)
+# 
+ggplot(EDA, aes(x = day)) +
+  geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
+  geom_line(aes(y = cloudCover*scale_factor, color = "Cloud Cover"), linewidth = 1.4, alpha = 0.6) +
+  # Scale for the two y-axes with limits
+  scale_y_continuous(
+    name = "(KW/Day)",
+    limits = c(0, 16),  # Set limits for the left axis
+    sec.axis = sec_axis(~./scale_factor, name = "(Degree Celcius)")  # Adjust scaling as needed
+  ) +
+  labs(x = "Date",
+       color = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title.y.right = element_text(color = "darkblue"),
+    axis.title.y.left = element_text(color = "black")
+  ) +
+  scale_color_manual(values = c("Energy Consumed" = "black", "Cloud Cover" = "darkblue"))
+
+
+
+
+
