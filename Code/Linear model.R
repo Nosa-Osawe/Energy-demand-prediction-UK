@@ -1,3 +1,9 @@
+library(tidyverse)
+library(corrplot)
+
+
+
+  
 # Linear model using all predictors without normalization
 library(car)
 
@@ -5,13 +11,33 @@ agg_energy <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Energy-demand-pred
 
 attach(agg_energy)
 agg_lm <- agg_energy %>% 
-  select(-energy_median, -energy_mean, -energy_count, -energy_min, -energy_max, -day )
+  select(-energy_median, -energy_mean, -energy_count, -energy_min, -energy_max, -day, -X )
 
+
+attach(agg_lm)
+
+corrplot(cor(agg_lm),
+         method = "color",
+         addCoef.col = "black",
+         tl.cex = 0.6,  # Adjust the value as needed
+         tl.col = "black",number.font =5,  number.cex = 0.66,
+         number.digits = 2,
+         col.lim = c(-1,1),
+         type = "full")
+?corrplot
+
+agg_lm_clean <- agg_lm %>% 
+  select(-temperatureMin,
+         -apparentTemperatureHigh,
+         -apparentTemperatureMax,
+         -apparentTemperatureLow, 
+         -temperatureHigh,
+         -apparentTemperatureMin)
 
 set.seed(123)
-indlm <- sample(2, nrow(agg_lm), replace = TRUE, prob = c(0.7, 0.3))
-lm_train1 <- agg_lm[indlm==1,]
-lm_test1 <- agg_lm[indlm==2,]
+indlm <- sample(2, nrow(agg_lm_clean), replace = TRUE, prob = c(0.7, 0.3))
+lm_train1 <- agg_lm_clean[indlm==1,]
+lm_test1 <- agg_lm_clean[indlm==2,]
 
 # Build the models
 lm1 <- lm(energy_sum ~., data = lm_train1)
@@ -43,9 +69,8 @@ lm1_mae
  # Linear model using important predictors from RF model
 
 
-lm_agg2 <- lm(energy_sum ~uvIndex+temperatureMax + apparentTemperatureMax
-             +temperatureHigh + apparentTemperatureLow +temperatureLow
-             + pressure + humidity +apparentTemperatureHigh, data = lm_train1)
+lm_agg2 <- lm(energy_sum ~uvIndex+temperatureMax + temperatureLow
+             + pressure + humidity +dewPoint, data = lm_train1)
 
 summary(lm_agg2)
 

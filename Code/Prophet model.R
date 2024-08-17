@@ -1,9 +1,10 @@
 ####################################################################################################333
-
+library(tidyverse)
 library(prophet)
+energy_agg <-read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Energy-demand-prediction-UK\\Data\\Energy Data\\agg_energy.csv")
 
 
-df_prophet <- agg[,c("day", "energy_sum")]
+df_prophet <- energy_agg[,c("day", "energy_sum")]
 head(df_prophet)
 
 df_prophet <- df_prophet %>% 
@@ -14,13 +15,28 @@ df_prophet <- df_prophet %>%
 model <- prophet(df_prophet, daily.seasonality=TRUE)
 
 # Create future dates for prediction (e.g., forecast for the next 30 days)
-future <- make_future_dataframe(model, periods = 60)
+future <- make_future_dataframe(model, periods = 182)
 
 # Make predictions
 forecast <- predict(model, future)
 
 # Plot the forecast
 plot(model, forecast)
+
+
+
+# Load required library
+library(ggplot2)
+
+# Create a forecast plot using the Prophet model
+forecast_plot <- plot(model, forecast)
+forecast$ds <- as.Date(forecast$ds)
+# Customize the axis titles
+forecast_plot + 
+  xlab("Date") + 
+  ylab("Mean Energy Consumption per Household (KW/day)")+
+   theme_bw()
+
 
 # Plot the forecast components
 prophet_plot_components(model, forecast)

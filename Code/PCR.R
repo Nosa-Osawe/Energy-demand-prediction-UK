@@ -5,7 +5,7 @@ library(Metrics)
 library(psych)
 
 energy_agg <-read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Energy-demand-prediction-UK\\Data\\Energy Data\\agg_energy.csv")
-view(energy_agg)
+glimpse(energy_agg)
 
 energy_agg <- energy_agg %>% 
   select(-energy_median, -energy_mean, -energy_count, -energy_min, -energy_max, -day )
@@ -37,7 +37,7 @@ pcr_model <- pcr(energy_sum ~.,
 
 summary(pcr_model)
 pcr_loaad <-loadings(pcr_model)
-print(pcr_loaad[,1:5])
+print(pcr_loaad[,1:7])
 # Determine optimal number of component
 
 validationplot(pcr_model, val.type = "MSEP") 
@@ -45,8 +45,9 @@ validationplot(pcr_model, val.type = "MSEP")
 pcr_predictions <- predict(pcr_model, ncomp = 7, newdata = PCR_test)
 
 # RMSE, MSE and MAE
-rmse(PCR_test$energy_sum, pcr_predictions)
+
 mse(PCR_test$energy_sum, pcr_predictions)
+rmse(PCR_test$energy_sum, pcr_predictions)
 mae(PCR_test$energy_sum, pcr_predictions)
 # Calculate R-squared
 sse <- sum((PCR_test$energy_sum - pcr_predictions)^2)  # Sum of Squared Errors
@@ -85,4 +86,4 @@ summary(pcr_lm)
 new_pcr_pred <- predict(pcr_lm, new_pcr_test)
 
 rmse(new_pcr_test$energy_sum, new_pcr_pred)
-
+mse(new_pcr_test$energy_sum, new_pcr_pred)
