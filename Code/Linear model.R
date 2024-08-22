@@ -26,6 +26,9 @@ corrplot(cor(agg_lm),
          type = "full")
 ?corrplot
 
+
+correlationmatrix <- as.data.frame(cor(agg_lm)) 
+
 agg_lm_clean <- agg_lm %>% 
   select(-temperatureMin,
          -apparentTemperatureHigh,

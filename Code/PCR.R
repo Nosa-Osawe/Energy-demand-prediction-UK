@@ -20,10 +20,6 @@ PCR_train <- energy_agg[indpcr==1,]
 PCR_test <- energy_agg[indpcr==2,]
 
 
-PCR_train <- as.data.frame(scale(PCR_train)) # This is not so necessary since the PCR function can scale it all together
-PCR_test <- as.data.frame(scale(PCR_test)) # Doing it twice has no ill-effect, too.
-
-
 # Check for missing values
 sum(is.na(PCR_train))
 nearZeroVar(PCR_train, saveMetrics = TRUE) # No near Zero variance

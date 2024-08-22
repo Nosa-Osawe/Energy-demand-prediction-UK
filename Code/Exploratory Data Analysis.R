@@ -78,18 +78,19 @@ ggplot(EDA, aes(x = day)) +
   ) +
   scale_color_manual(values = c("Energy Consumed" = "black", "Max. Temperature" = "red"))
 
-
+max(humidity)
 
 # Hunidity
 
+scale_factor <- max(EDA$energy_sum) / max(EDA$humidity)
 ggplot(EDA, aes(x = day)) +
  geom_line(aes(y = energy_sum, color = "Energy Consumed"), linewidth = 1) +
-  geom_line(aes(y = humidity*10, color = "Humidity"), linewidth = 0.9, alpha = 0.6) +
+  geom_line(aes(y = humidity*scale_factor, color = "Humidity"), linewidth = 1.2, alpha = 0.6) +
   # Scale for the two y-axes with limits
   scale_y_continuous(
     name = "(KW/Day)",
     limits = c(3, 16),  # Set limits for the left axis
-    sec.axis = sec_axis(~./2, name = "(dg/m3)")  # Adjust scaling as needed
+    sec.axis = sec_axis(~./scale_factor, name = "(g/m3)")  # Adjust scaling as needed
   ) +
   labs(x = "Date",
        color = NULL
@@ -204,7 +205,7 @@ ggplot(EDA, aes(x = day)) +
   scale_y_continuous(
     name = "(KW/Day)",
     limits = c(0, 16),  # Set limits for the left axis
-    sec.axis = sec_axis(~./scale_factor, name = "(Degree Celcius)")  # Adjust scaling as needed
+    sec.axis = sec_axis(~./scale_factor, name = "NCEP scale")  # Adjust scaling as needed
   ) +
   labs(x = "Date",
        color = NULL

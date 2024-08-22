@@ -1,7 +1,7 @@
-# Load necessary libraries
+ 
 library(tidyverse)
 
-# Specify the folder containing the CSV files
+
 Energy_Daily <- "C:\\Users\\DELL\\Documents\\Git in R\\Energy-demand-prediction-UK\\Data\\Energy Data\\daily_dataset\\daily_dataset"
 
 
