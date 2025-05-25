@@ -2,6 +2,9 @@ library(randomForest)
 library(tidyverse)
 library(Metrics)
 
+# install.packages("rsample")
+library(rsample)
+
 agg_energy <- read.csv("C:\\Users\\DELL\\Documents\\Git in R\\Energy-demand-prediction-UK\\Data\\Energy Data\\agg_energy.csv")
 
 attach(agg_energy)
@@ -19,9 +22,17 @@ ind <- sample(2, nrow(agg), replace = TRUE, prob = c(0.7, 0.3))
 rf_train <- agg[ind==1,]
 rf_test <- agg[ind==2,]
 
+##-- Its easier to resample using rsample (if considering split into two parts)
+# 70-30 split
+#  split <- initial_split(agg, prop = 0.7)
+
+#  rf_train <- training(split)
+#  rf_test  <- testing(split)
 
 
-best_mtry <- tuneRF(rf_train[,-which(names(rf_train) == "energy_sum")], 
+
+best_mtry <- tuneRF(rf_train %>% 
+                      select(-energy_sum), 
                     rf_train$energy_sum,
                     ntreeTry = 500,  # Number of trees to try
                     stepFactor = 2,  # Increment factor for mtry
@@ -42,7 +53,7 @@ varImpPlot(rf_energy,
 
 # Predict on the test set
 rf_predictions <- as.numeric(predict(rf_energy, newdata = rf_test)) 
-
+predict(rf_energy, rf_test)
 # Actual values
 rf_actuals <- as.numeric(rf_test$energy_sum)
 
@@ -82,7 +93,7 @@ varImpPlot(PCArf_energy,
 
 # Predict on the test set
 PCArf_predictions <- as.numeric(predict(PCArf_energy, newdata = new_pcr_test)) 
-
+ 
 # Actual values
 PCArf_actuals <- as.numeric(new_pcr_test$energy_sum)
 
